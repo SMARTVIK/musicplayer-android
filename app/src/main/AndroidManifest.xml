@@ -7,6 +7,9 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+
+        <!-- The launchMode will aid the process of navigating back to the app after moving away from it.
+        We will display a notification indicating the song currently being played, tapping the notification will take the user back to the app.-->
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -18,8 +21,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name="net.d366.musicplayer.MusicService" />
+
+        <!-- Service class for music playback -->
+        <service android:name=".MusicService" />
     </application>
 
+    <!-- Let music playback continue when the user's device becomes idle -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 </manifest>

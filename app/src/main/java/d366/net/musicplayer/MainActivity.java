@@ -28,6 +28,14 @@ public class MainActivity extends AppCompatActivity {
         songView = (ListView)findViewById(R.id.song_list);
         songList = new ArrayList<>();
         getSongList();
+
+        // Sort the title of songs in songList alphabetically
+        Collections.sort(songList, new Comparator<Song>() {
+            @Override
+            public int compare(Song lhs, Song rhs) {
+                return lhs.getTitle().compareTo(rhs.getTitle());
+            }
+        });
     }
 
     @Override
