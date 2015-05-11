@@ -18,14 +18,14 @@ import android.widget.ListView;
 public class MainActivity extends AppCompatActivity {
 
     private ArrayList<Song> songList;
-    private ListView songView;
+    private ListView songListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        songView = (ListView)findViewById(R.id.song_list);
+        songListView = (ListView)findViewById(R.id.song_list);
         songList = new ArrayList<>();
         getSongList();
 
@@ -36,6 +36,10 @@ public class MainActivity extends AppCompatActivity {
                 return lhs.getTitle().compareTo(rhs.getTitle());
             }
         });
+
+        // Map the songList to the songListView
+        SongAdapter songAdapter = new SongAdapter(this, songList);
+        songListView.setAdapter(songAdapter);
     }
 
     @Override
@@ -53,9 +57,9 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        //if (id == R.id.action_settings) {
+        //    return true;
+        //}
 
         return super.onOptionsItemSelected(item);
     }
