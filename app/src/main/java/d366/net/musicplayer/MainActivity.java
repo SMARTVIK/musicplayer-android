@@ -70,6 +70,16 @@ public class MainActivity extends AppCompatActivity implements MediaController.M
         musicController.setEnabled(true);
     }
 
+    private void playNext(){
+        musicService.playNext();
+        musicController.show(0);
+    }
+
+    private void playPrev(){
+        musicService.playPrev();
+        musicController.show(0);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -170,31 +180,43 @@ public class MainActivity extends AppCompatActivity implements MediaController.M
 
     @Override
     public void start() {
-
+        musicService.go();
     }
 
     @Override
     public void pause() {
-
+        musicService.pausePlayer();
     }
 
     @Override
     public int getDuration() {
+        if (musicService != null && musicBound && musicService.isPlaying()){
+            return musicService.getDuration();
+        }
+
         return 0;
     }
 
     @Override
     public int getCurrentPosition() {
+        if (musicService != null && musicBound && musicService.isPlaying()){
+            return musicService.getCurrentPosition();
+        }
+
         return 0;
     }
 
     @Override
     public void seekTo(int pos) {
-
+        musicService.seek(pos);
     }
 
     @Override
     public boolean isPlaying() {
+        if (musicService != null && musicBound){
+            return musicService.isPlaying();
+        }
+
         return false;
     }
 
@@ -205,17 +227,17 @@ public class MainActivity extends AppCompatActivity implements MediaController.M
 
     @Override
     public boolean canPause() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean canSeekBackward() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean canSeekForward() {
-        return false;
+        return true;
     }
 
     @Override

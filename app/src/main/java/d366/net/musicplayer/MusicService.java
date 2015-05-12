@@ -53,6 +53,65 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         }
     }
 
+    public void playSong(){
+        // Since we also use this code when the user is playing subsequent songs
+        mediaPlayer.reset();
+
+        Song song = songs.get(currentSongPosition);
+        long songId = song.getID();
+
+        Uri trackUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, songId);
+        try {
+            mediaPlayer.setDataSource(getApplicationContext(), trackUri);
+        } catch (Exception ex){
+            Log.e("MUSIC SERVICE", "Error setting data source", ex);
+        }
+
+        mediaPlayer.prepareAsync();
+    }
+
+    public void setCurrentSongPosition(int songPosition){
+        currentSongPosition = songPosition;
+    }
+
+    public int getCurrentPosition(){
+        return mediaPlayer.getCurrentPosition();
+    }
+
+    public int getDuration(){
+        return mediaPlayer.getDuration();
+    }
+
+    public boolean isPlaying(){
+        return mediaPlayer.isPlaying();
+    }
+
+    public void pausePlayer(){
+        mediaPlayer.pause();
+    }
+
+    public void seek(int position){
+        mediaPlayer.seekTo(position);
+    }
+
+    public void go(){
+        mediaPlayer.start();
+    }
+
+    public void playPrev(){
+        currentSongPosition--;
+        if(currentSongPosition < 0) currentSongPosition = songs.size() - 1;
+
+        playSong();
+    }
+
+    public void playNext(){
+        currentSongPosition++;
+        if(currentSongPosition >= songs.size()) currentSongPosition = 0;
+
+        playSong();
+    }
+
     @Override
     public IBinder onBind(Intent intent) {
         return musicBinder;
@@ -78,26 +137,5 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     public void onPrepared(MediaPlayer mp) {
         // start playback
         mp.start();
-    }
-
-    public void playSong(){
-        // Since we also use this code when the user is playing subsequent songs
-        mediaPlayer.reset();
-
-        Song song = songs.get(currentSongPosition);
-        long songId = song.getID();
-
-        Uri trackUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, songId);
-        try {
-            mediaPlayer.setDataSource(getApplicationContext(), trackUri);
-        } catch (Exception ex){
-            Log.e("MUSIC SERVICE", "Error setting data source", ex);
-        }
-
-        mediaPlayer.prepareAsync();
-    }
-
-    public void setCurrentSongPosition(int songPosition){
-        currentSongPosition = songPosition;
     }
 }
