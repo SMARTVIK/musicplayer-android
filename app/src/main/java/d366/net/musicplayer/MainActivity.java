@@ -15,13 +15,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.MediaController;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
 // ActionBarActivity is deprecated since v22.1.0
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MediaController.MediaPlayerControl {
 
     private ArrayList<Song> songList;
     private ListView songListView;
@@ -46,6 +47,28 @@ public class MainActivity extends AppCompatActivity {
             musicBound = false;
         }
     };
+    private MusicController musicController;
+
+    private void setMusicController(){
+        musicController = new MusicController(this);
+
+        musicController.setPrevNextListeners(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                playNext();
+            }
+        }, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                playPrev();
+            }
+        });
+
+        musicController.setMediaPlayer(this);
+        musicController.setAnchorView(findViewById(R.id.song_list));
+        musicController.setEnabled(true);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +90,8 @@ public class MainActivity extends AppCompatActivity {
         // Map the songList to the songListView
         SongAdapter songAdapter = new SongAdapter(this, songList);
         songListView.setAdapter(songAdapter);
+
+        setMusicController();
     }
 
     @Override
@@ -141,5 +166,60 @@ public class MainActivity extends AppCompatActivity {
     public void songPicked(View view){
         musicService.setCurrentSongPosition(Integer.parseInt(view.getTag().toString()));
         musicService.playSong();
+    }
+
+    @Override
+    public void start() {
+
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public int getDuration() {
+        return 0;
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        return 0;
+    }
+
+    @Override
+    public void seekTo(int pos) {
+
+    }
+
+    @Override
+    public boolean isPlaying() {
+        return false;
+    }
+
+    @Override
+    public int getBufferPercentage() {
+        return 0;
+    }
+
+    @Override
+    public boolean canPause() {
+        return false;
+    }
+
+    @Override
+    public boolean canSeekBackward() {
+        return false;
+    }
+
+    @Override
+    public boolean canSeekForward() {
+        return false;
+    }
+
+    @Override
+    public int getAudioSessionId() {
+        return 0;
     }
 }
