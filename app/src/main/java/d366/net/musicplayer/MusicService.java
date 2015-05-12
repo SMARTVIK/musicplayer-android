@@ -1,12 +1,16 @@
 package d366.net.musicplayer;
 
 import android.app.Service;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.provider.MediaStore;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -72,6 +76,28 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     @Override
     public void onPrepared(MediaPlayer mp) {
+        // start playback
+        mp.start();
+    }
 
+    public void playSong(){
+        // Since we also use this code when the user is playing subsequent songs
+        mediaPlayer.reset();
+
+        Song song = songs.get(currentSongPosition);
+        long songId = song.getID();
+
+        Uri trackUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, songId);
+        try {
+            mediaPlayer.setDataSource(getApplicationContext(), trackUri);
+        } catch (Exception ex){
+            Log.e("MUSIC SERVICE", "Error setting data source", ex);
+        }
+
+        mediaPlayer.prepareAsync();
+    }
+
+    public void setCurrentSongPosition(int songPosition){
+        currentSongPosition = songPosition;
     }
 }
