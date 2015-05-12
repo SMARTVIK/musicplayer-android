@@ -1,5 +1,7 @@
 package d366.net.musicplayer;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentUris;
 import android.content.Intent;
@@ -23,6 +25,10 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     private int currentSongPosition;
 
     private final IBinder musicBinder = new MusicBinder();
+
+    private String songTitle = "";
+
+    private static final int NOTIFICATION_ID = 1;
 
     public void onCreate(){
         super.onCreate();
@@ -58,6 +64,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         mediaPlayer.reset();
 
         Song song = songs.get(currentSongPosition);
+        songTitle = song.getTitle();
         long songId = song.getID();
 
         Uri trackUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, songId);
@@ -68,6 +75,13 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         }
 
         mediaPlayer.prepareAsync();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        stopForeground(true);
     }
 
     public void setCurrentSongPosition(int songPosition){
@@ -137,5 +151,23 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     public void onPrepared(MediaPlayer mp) {
         // start playback
         mp.start();
+
+        // NotificationIntent display a notification showing the title of the track beging played
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        // PendingItent take the user back to the main Activity when they select the notification
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Notification.Builder builder = new Notification.Builder(this);
+        builder.setContentIntent(pendingIntent)
+                .setSmallIcon(R.drawable.play)
+                .setTicker(songTitle)
+                .setOngoing(true)
+                .setContentTitle("Playing")
+                .setContentText(songTitle);
+        Notification notification = builder.build();
+
+        startForeground(NOTIFICATION_ID, notification);
     }
 }
