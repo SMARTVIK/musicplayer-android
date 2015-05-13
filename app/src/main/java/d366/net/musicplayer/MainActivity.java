@@ -139,6 +139,7 @@ public class MainActivity extends AppCompatActivity implements MediaController.M
 
         switch (id) {
             case R.id.action_shuffle:
+                musicService.setShuffle();
                 break;
 
             case R.id.action_end:

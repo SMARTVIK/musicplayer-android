@@ -15,6 +15,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 // Service class execute music playback continuously, even when the user is not directly interacting with the application
 public class MusicService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener {
@@ -30,12 +31,23 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     private static final int NOTIFICATION_ID = 1;
 
+    private boolean shuffle = false;
+
+    private Random random;
+
     public void onCreate(){
         super.onCreate();
+
+        random = new Random();
 
         currentSongPosition = 0;
         mediaPlayer = new MediaPlayer();
         initMediaPlayer();
+    }
+
+    public void setShuffle(){
+        if (shuffle) shuffle = false;
+        else shuffle = true;
     }
 
     public void initMediaPlayer(){
@@ -120,8 +132,17 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     }
 
     public void playNext(){
-        currentSongPosition++;
-        if(currentSongPosition >= songs.size()) currentSongPosition = 0;
+        if (shuffle) {
+            int newSongPosition = currentSongPosition;
+            while (newSongPosition == currentSongPosition){
+                newSongPosition = random.nextInt(songs.size());
+            }
+
+            currentSongPosition = newSongPosition;
+        } else {
+            currentSongPosition++;
+            if (currentSongPosition >= songs.size()) currentSongPosition = 0;
+        }
 
         playSong();
     }
