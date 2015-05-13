@@ -48,6 +48,28 @@ public class MainActivity extends AppCompatActivity implements MediaController.M
         }
     };
     private MusicController musicController;
+    private boolean paused = false, playbackPaused = false;
+
+    @Override
+    protected void onStop() {
+        musicController.hide();
+        super.onStop();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (paused){
+            setMusicController();
+            paused = false;
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        paused = true;
+    }
 
     private void setMusicController(){
         musicController = new MusicController(this);
@@ -72,11 +94,21 @@ public class MainActivity extends AppCompatActivity implements MediaController.M
 
     private void playNext(){
         musicService.playNext();
+        if (playbackPaused){
+            setMusicController();
+            playbackPaused = false;
+        }
+
         musicController.show(0);
     }
 
     private void playPrev(){
         musicService.playPrev();
+        if (playbackPaused){
+            setMusicController();
+            playbackPaused = false;
+        }
+
         musicController.show(0);
     }
 
@@ -177,6 +209,12 @@ public class MainActivity extends AppCompatActivity implements MediaController.M
     public void songPicked(View view){
         musicService.setCurrentSongPosition(Integer.parseInt(view.getTag().toString()));
         musicService.playSong();
+
+        if (playbackPaused){
+            setMusicController();
+            playbackPaused = false;
+        }
+        musicController.show(0);
     }
 
     @Override
@@ -186,6 +224,7 @@ public class MainActivity extends AppCompatActivity implements MediaController.M
 
     @Override
     public void pause() {
+        playbackPaused = true;
         musicService.pausePlayer();
     }
 
